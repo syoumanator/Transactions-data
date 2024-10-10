@@ -1,16 +1,14 @@
-# This is a sample Python script.
+from datetime import datetime
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from src.services import transaction_analysis
+from src.utils import read_file_excel
+from src.views import PATH_TO_EXCEL, response_json
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
-
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+if __name__ == "__main__":
+    transactions = read_file_excel(PATH_TO_EXCEL)
+    date_now = datetime.now()
+    current_time = datetime.strftime(date_now, "%Y-%m-%d %H:%M:%S")
+    home_page = response_json(current_time)
+    print(home_page)
+    cashback_category = transaction_analysis(transactions, 2021, 3)
+    print(cashback_category)

@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -101,4 +100,3 @@ def test_df_nan_zero() -> pd.DataFrame:
         {"Номер карты": "5678", "Сумма операции": "-50.0", "Кэшбэк": "-20.0", "Категория": "Продукты"},
     ]
     return pd.DataFrame(transactions)
-
