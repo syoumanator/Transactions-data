@@ -3,8 +3,15 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from src.utils import (PATH_TO_EXCEL, card_information, get_currency_rates, get_price_stocks, greeting,
-                       read_file_excel, top_transactions)
+from src.utils import (
+    PATH_TO_EXCEL,
+    card_information,
+    get_currency_rates,
+    get_price_stocks,
+    greeting,
+    read_file_excel,
+    top_transactions,
+)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PATH_TO_JSON = BASE_DIR / "data" / "data.json"
@@ -40,6 +47,8 @@ def response_json(date: str) -> Any:
     }
     VIEWS_LOG.info("Формирование JSON-ответа")
     return user_data
+
+
 # print(response_json("2021-12-15 16:59:20"))
 
 

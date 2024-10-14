@@ -3,6 +3,8 @@ from datetime import datetime
 from src.services import transaction_analysis
 from src.utils import read_file_excel
 from src.views import PATH_TO_EXCEL, response_json
+from src.reports import spending_by_category
+
 
 if __name__ == "__main__":
     transactions = read_file_excel(PATH_TO_EXCEL)
@@ -12,3 +14,5 @@ if __name__ == "__main__":
     print(home_page)
     cashback_category = transaction_analysis(transactions, 2021, 3)
     print(cashback_category)
+    report = spending_by_category(transactions, "Переводы", "31.12.2021")
+    print(report)
