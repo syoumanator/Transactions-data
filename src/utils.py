@@ -1,15 +1,24 @@
+import logging
+import os
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
-import logging
-from datetime import datetime
-# import datetime
-import os
+import requests
+from dotenv import load_dotenv
+
+from src.user_settings_json import settings
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 PATH_TO_EXCEL = BASE_DIR / "data" / "operations.xlsx"
 PATH_UTILS_LOG = BASE_DIR / "logs" / "utils.log"
+PATH_ENV = BASE_DIR / ".env"
+
+load_dotenv(dotenv_path=PATH_ENV)
+API_KEY_CURRENCIES = os.getenv("API_KEY_CURRENCIES")
+API_KEY_STOCK = os.getenv("API_KEY_STOCK")
+headers = {"apikey": API_KEY_CURRENCIES}
 
 
 logging.basicConfig(
@@ -20,14 +29,8 @@ logging.basicConfig(
     encoding="utf-8",
 )
 
+
 UTILS_LOG = logging.getLogger(__name__)
-
-
-
-# def correct_time(time):
-#     date = datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
-#     correct_date = date.strftime('%d.%m.%Y %H:%M:%S')
-#     return correct_date
 
 
 def read_file_excel(path: Path) -> pd.DataFrame:
@@ -43,23 +46,6 @@ def read_file_excel(path: Path) -> pd.DataFrame:
     except FileNotFoundError:
         UTILS_LOG.warning("Файл не найден")
         print("Файл не найден")
-
-
-# def create_dict(input_date, file: pd.DataFrame):
-#     current_transactions = []
-#     """Функция, возвращающая отфильтрованные по дате транзакции"""
-#     transactions = file.to_dict(orient="records")
-#     for transaction in transactions:
-#         if (
-#             str(transaction["Дата платежа"])[2:10] == input_date[2:10]
-#             and str(transaction["Дата платежа"])[:2] <= input_date[:2]
-#         ):
-#             current_transactions.append(transaction)
-#     return current_transactions
-#
-# user_input = input("Введите дату формата YYYY-MM-DD HH:MM:SS: ")
-# print(create_dict(user_input, read_file_excel(PATH_TO_EXCEL)))
-
 
 
 def greeting(date: str) -> str:
@@ -86,11 +72,15 @@ def top_transactions(transactions_df: pd.DataFrame) -> list[dict[str, Any | None
     try:
         UTILS_LOG.info("Сортировка транзакций по сумме платежа")
         transactions_df = transactions_df.sort_values(by="Сумма платежа", ascending=False, key=lambda x: abs(x))
-        top_5_transactions = transactions_df.head(5).to_dict('records')
+        top_5_transactions = transactions_df.head(5).to_dict("records")
         result = []
         for transaction in top_5_transactions:
-            operation = {"date": transaction.get("Дата операции"), "amount": transaction.get("Сумма платежа"),
-                         "category": transaction.get("Категория"), "description": transaction.get("Описание")}
+            operation = {
+                "date": transaction.get("Дата операции"),
+                "amount": transaction.get("Сумма платежа"),
+                "category": transaction.get("Категория"),
+                "description": transaction.get("Описание"),
+            }
             result.append(operation)
         UTILS_LOG.info("Выполнение сортировки транзакций по сумме платежа завершено")
 
@@ -98,7 +88,9 @@ def top_transactions(transactions_df: pd.DataFrame) -> list[dict[str, Any | None
     except Exception as e:
         UTILS_LOG.error(f"Произошла ошибка {e}")
         return []
-# print(create_dict(read_file_excel(PATH_TO_EXCEL)))
+
+
+# print(top_transactions(read_file_excel(PATH_TO_EXCEL)))
 
 
 def card_information(transactions_df: pd.DataFrame) -> list[dict]:
@@ -144,3 +136,52 @@ def card_information(transactions_df: pd.DataFrame) -> list[dict]:
 
 
 # print(card_information(read_file_excel(PATH_TO_EXCEL)))
+
+
+def get_currency_rates() -> list[dict]:
+    """Функция принимает список с кодами валют,
+    а возвращает список словарей с текущими курсами"""
+    currency_list = []
+    for currency in settings["user_currencies"]:
+        url = f"https://api.apilayer.com/exchangerates_data/convert?to=RUB&from={currency}&amount=1"
+        UTILS_LOG.info(f"Запрос курса валюты {currency}")
+        response = requests.get(url, headers=headers)
+
+        if response.status_code == 200:
+            UTILS_LOG.info("Успешный запрос")
+            result = response.json()
+            ruble_cost = result["result"]
+            currency_list.append({"currency": currency, "rate": ruble_cost})
+        else:
+            UTILS_LOG.warning(f"Ошибка: {response.status_code}, {response.text}")
+            print(f"Ошибка: {response.status_code}, {response.text}")
+            currency_list.append({"currency": currency, "rate": None})
+    UTILS_LOG.info("Курсы валют созданы")
+    return currency_list
+
+
+# print(get_currency_rates())
+
+
+def get_price_stocks() -> list[dict]:
+    """Функция принимает список с кодами компаний
+    и возвращает список словарей со стоимостью акций каждой компании"""
+    price_stocks = []
+    for stock in settings["user_stocks"]:
+        url = f"https://financialmodelingprep.com/api/v3/quote/{stock}?apikey={API_KEY_STOCK}"
+        UTILS_LOG.info(f"Запрос стоимости акций компании {stock}")
+        response = requests.get(url)
+        if response.status_code == 200:
+            UTILS_LOG.info("Успешный запрос")
+            result = response.json()
+            price = result[0]["price"]
+            price_stocks.append({"stock": stock, "price": price})
+        else:
+            UTILS_LOG.warning(f"Ошибка: {response.status_code}, {response.text}")
+            print(f"Ошибка: {response.status_code}, {response.text}")
+            price_stocks.append({"stock": stock, "price": None})
+    UTILS_LOG.info("Стоимость акций создана")
+    return price_stocks
+
+
+# print(get_price_stocks())
