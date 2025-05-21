@@ -1,22 +1,17 @@
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+
 import pandas as pd
 import pytest
-from datetime import datetime
 
-from src.utils import read_file_excel, greeting, top_transactions, card_information
-
-
-# def test_correct_time():
-#     input_time = "2023-08-10 14:30:00"
-#     expected_output = "10.08.2023 14:30:00"
-#     assert correct_time(input_time) == expected_output
-#
-#
-# def test_invalid_input_format():
-#     input_time = "not"
-#     with pytest.raises(ValueError):
-#         correct_time(input_time)
+from src.utils import (
+    card_information,
+    get_currency_rates,
+    get_price_stocks,
+    greeting,
+    read_file_excel,
+    top_transactions,
+)
 
 
 def test_read_excel_success(read_file: Path) -> None:
@@ -42,7 +37,6 @@ def test_read_excel_not_found(read_file: Path) -> None:
     with patch("pandas.read_excel", side_effect=FileNotFoundError("File not found")):
         result = read_file_excel(read_file)
         assert result is None
-
 
 
 def test_read_excel_wrong_path(wrong_file: Path) -> None:
@@ -108,9 +102,67 @@ def test_get_cards_data_cashback(test_df_not_cashback: pd.DataFrame) -> None:
 
 
 def test_get_cards_data_nan_card_number_2(test_df_nan_zero: pd.DataFrame) -> None:
-    expected_result = [{'cashback': 1.0, 'last_digits': '1234', 'total_spent': 100.0},
- {'cashback': 0.5, 'last_digits': '5678', 'total_spent': 50.0}]
+    expected_result = [
+        {"cashback": 1.0, "last_digits": "1234", "total_spent": 100.0},
+        {"cashback": 0.5, "last_digits": "5678", "total_spent": 50.0},
+    ]
     assert card_information(test_df_nan_zero) == expected_result
 
 
+@patch("src.utils.requests.get")
+def test_get_currency_rates(mock_get: MagicMock) -> None:
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = {
+        "success": True,
+        "query": {"from": "USD", "to": "RUB", "amount": "1"},
+        "info": {"timestamp": 1726849624, "rate": 92.349211},
+        "date": "2024-09-20",
+        "result": 92.349211,
+    }
+    result = get_currency_rates()
+    assert result == [{"currency": "USD", "rate": 92.349211}, {"currency": "EUR", "rate": 92.349211}]
 
+
+@patch("src.utils.requests.get")
+def test_get_currency_rates_invalid_api(mock_get: MagicMock) -> None:
+    mock_get.return_value.status_code = 401
+    mock_get.return_value.json.return_value = {"message": "Invalid authentication credentials"}
+    result = get_currency_rates()
+    assert result == [{"currency": "USD", "rate": None}, {"currency": "EUR", "rate": None}]
+
+
+@patch("src.utils.requests.get")
+def test_get_price_stocks(mock_get: MagicMock) -> None:
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = [
+        {"price": 145.775, "stock": "AAPL"},
+        {"price": 145.775, "stock": "AMZN"},
+        {"price": 145.775, "stock": "GOOGL"},
+        {"price": 145.775, "stock": "MSFT"},
+        {"price": 145.775, "stock": "TSLA"},
+    ]
+    result = get_price_stocks()
+    assert result == [
+        {"price": 145.775, "stock": "AAPL"},
+        {"price": 145.775, "stock": "AMZN"},
+        {"price": 145.775, "stock": "GOOGL"},
+        {"price": 145.775, "stock": "MSFT"},
+        {"price": 145.775, "stock": "TSLA"},
+    ]
+
+
+@patch("src.utils.requests.get")
+def test_get_price_stocks_invalid_api(mock_get: MagicMock) -> None:
+    mock_get.return_value.status_code = 401
+    mock_get.return_value.json.return_value = {
+        "Error Message": "Invalid API KEY. Feel free to create a Free API Key or visit "
+        "https://site.financialmodelingprep.com/faqs?search=why-is-my-api-key-invalid for more information."
+    }
+    result = get_price_stocks()
+    assert result == [
+        {"price": None, "stock": "AAPL"},
+        {"price": None, "stock": "AMZN"},
+        {"price": None, "stock": "GOOGL"},
+        {"price": None, "stock": "MSFT"},
+        {"price": None, "stock": "TSLA"},
+    ]

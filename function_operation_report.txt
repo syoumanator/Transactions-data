@@ -1,0 +1,1 @@
+spending_by_category error: spending_by_category() missing 2 required positional arguments: 'transactions' and 'category' Inputs: (), {}

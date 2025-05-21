@@ -1,5 +1,4 @@
 from pathlib import Path
-from unittest.mock import patch
 
 import pandas as pd
 import pytest
@@ -102,3 +101,13 @@ def test_df_nan_zero() -> pd.DataFrame:
     ]
     return pd.DataFrame(transactions)
 
+
+@pytest.fixture
+def transactions_df() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "Дата операции": ["01.03.2024 12:00:00", "02.04.2024 13:30:00", "03.05.2024 14:15:00"],
+            "Категория": ["Продукты", "Продукты", "Транспорт"],
+            "Сумма": [100, 200, 50],
+        }
+    )

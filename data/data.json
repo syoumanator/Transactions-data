@@ -1,47 +1,104 @@
-[
-    {
-        "cards": [
-            {
-                "last_digits": "*4556",
-                "total_spent": -228.0,
-                "cashback": -2.28
-            },
-            {
-                "last_digits": "*4556",
-                "total_spent": -110.0,
-                "cashback": -1.1
-            },
-            {
-                "last_digits": "*4556",
-                "total_spent": -525.0,
-                "cashback": -5.25
-            }
-        ],
-        "top_transactions": [
-            {
-                "date": "01.11.2021",
-                "amount": -525.0,
-                "category": "\u041e\u0434\u0435\u0436\u0434\u0430 \u0438 \u043e\u0431\u0443\u0432\u044c",
-                "description": "WILDBERRIES"
-            },
-            {
-                "date": "01.11.2021",
-                "amount": -228.0,
-                "category": "\u0421\u0443\u043f\u0435\u0440\u043c\u0430\u0440\u043a\u0435\u0442\u044b",
-                "description": "\u041a\u043e\u043b\u0445\u043e\u0437"
-            },
-            {
-                "date": "01.11.2021",
-                "amount": -110.0,
-                "category": "\u0424\u0430\u0441\u0442\u0444\u0443\u0434",
-                "description": "Mouse Tail"
-            }
-        ],
-        "currency_rates": [
-            {}
-        ],
-        "stock_prices": [
-            {}
-        ]
-    }
-]
+{
+    "greeting": "Добрый день",
+    "cards": [
+        {
+            "last_digits": "*7197",
+            "total_spent": 2389912.73,
+            "cashback": 23899.13
+        },
+        {
+            "last_digits": "*5091",
+            "total_spent": 17367.5,
+            "cashback": 173.67
+        },
+        {
+            "last_digits": "*4556",
+            "total_spent": 1768837.24,
+            "cashback": 17208.22
+        },
+        {
+            "last_digits": "*1112",
+            "total_spent": 46207.08,
+            "cashback": 462.07
+        },
+        {
+            "last_digits": "*5507",
+            "total_spent": 84000.0,
+            "cashback": 840.0
+        },
+        {
+            "last_digits": "*6002",
+            "total_spent": 69200.0,
+            "cashback": 692.0
+        },
+        {
+            "last_digits": "*5441",
+            "total_spent": 470854.8,
+            "cashback": 4708.55
+        }
+    ],
+    "top_transactions": [
+        {
+            "date": "21.03.2019 17:01:37",
+            "amount": -190044.51,
+            "category": "Переводы",
+            "description": "Перевод Кредитная карта. ТП 10.2 RUR"
+        },
+        {
+            "date": "21.03.2019 17:01:38",
+            "amount": 190044.51,
+            "category": "Переводы",
+            "description": "Перевод Кредитная карта. ТП 10.2 RUR"
+        },
+        {
+            "date": "27.07.2018 11:44:21",
+            "amount": -179571.56,
+            "category": NaN,
+            "description": "Перевод средств с брокерского счета"
+        },
+        {
+            "date": "28.07.2018 01:29:19",
+            "amount": -179571.56,
+            "category": NaN,
+            "description": "Перевод средств с брокерского счета"
+        },
+        {
+            "date": "27.07.2018 12:53:58",
+            "amount": -179571.56,
+            "category": NaN,
+            "description": "Перевод средств с брокерского счета"
+        }
+    ],
+    "exchange_rates": [
+        {
+            "currency": "USD",
+            "rate": null
+        },
+        {
+            "currency": "EUR",
+            "rate": null
+        }
+    ],
+    "stocks": [
+        {
+            "stock": "AAPL",
+            "price": 227.55
+        },
+        {
+            "stock": "AMZN",
+            "price": 188.82
+        },
+        {
+            "stock": "GOOGL",
+            "price": 163.24
+        },
+        {
+            "stock": "MSFT",
+            "price": 416.32
+        },
+        {
+            "stock": "TSLA",
+            "price": 217.8
+        }
+    ]
+}
